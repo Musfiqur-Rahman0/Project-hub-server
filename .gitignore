@@ -7,4 +7,5 @@ generated/prisma
 .agents
 
 dist
+/src/generated
 .env
