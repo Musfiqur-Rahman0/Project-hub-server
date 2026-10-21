@@ -6,4 +6,5 @@ generated/prisma
 .claude
 .agents
 
-.dist
+dist
+.env
