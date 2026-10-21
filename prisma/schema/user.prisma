@@ -1,14 +1,13 @@
 model User {
-    id              String    @id @default(uuid())
-    fullName        String    @map("full_name")
-    email           String    @unique
-    passwordHash    String    @map("password_hash")
-    role            Role      @default(STUDENT)
-    isActive        Boolean   @default(true) @map("is_active")
-    termsAcceptedAt DateTime  @map("terms_accepted_at")
-    lastLoginAt     DateTime? @map("last_login_at")
-    createdAt       DateTime  @default(now()) @map("created_at")
-    updatedAt       DateTime  @updatedAt @map("updated_at")
+    id           String    @id @default(uuid())
+    fullName     String    @map("full_name")
+    email        String    @unique
+    passwordHash String    @map("password_hash")
+    role         Role      @default(STUDENT)
+    isActive     Boolean   @default(true) @map("is_active")
+    lastLoginAt  DateTime? @map("last_login_at")
+    createdAt    DateTime  @default(now()) @map("created_at")
+    updatedAt    DateTime  @updatedAt @map("updated_at")
 
     @@index([role])
     @@map("users")
