@@ -5,3 +5,5 @@ generated/prisma
 .cursor
 .claude
 .agents
+
+.dist
