@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Response, Request } from "express";
 import config from "../config/index.js";
 
 export const ACCESS_COOKIE_NAME = "access_token";
@@ -27,6 +27,7 @@ export const attachTokensToCookie = (
 
   res.setHeader("Set-Cookie", [accessCookie, refreshCookie]);
 };
+
 export const clearTokensFromCookie = (res: Response) => {
   const accessCookie = serializeCookie(ACCESS_COOKIE_NAME, "", {
     httpOnly: true,
@@ -72,3 +73,16 @@ function serializeCookie(
 
   return parts.join(";");
 }
+
+export const parseCookies = (req: Request): Record<string, string> => {
+  const raw = req.headers.cookie ?? "";
+  const cookies: Record<string, string> = {};
+
+  raw.split(";").forEach((part) => {
+    const [key, ...rest] = part.trim().split("=");
+    if (!key) return;
+    cookies[key] = decodeURIComponent(rest.join("=") ?? "");
+  });
+
+  return cookies;
+};
