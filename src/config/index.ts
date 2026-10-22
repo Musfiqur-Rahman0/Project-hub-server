@@ -5,6 +5,7 @@ const config = {
   connecting_string: process.env.DATABASE_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   FRONTEND_URL: process.env.FRONTEND_URL,
+  NODE_ENV: process.env.NODE_ENV || "development",
 };
 
 export default config;
