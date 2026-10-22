@@ -3,3 +3,11 @@ enum Role {
     MENTOR
     ADMIN
 }
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("submission_status")
+}
