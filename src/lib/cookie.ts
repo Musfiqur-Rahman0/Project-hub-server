@@ -27,12 +27,8 @@ export const attachTokensToCookie = (
 
   res.setHeader("Set-Cookie", [accessCookie, refreshCookie]);
 };
-export const clearTokensFromCookie = (
-  res: Response,
-  accessToken: string,
-  refreshToken: string,
-) => {
-  const accessCookie = serializeCookie(ACCESS_COOKIE_NAME, accessToken, {
+export const clearTokensFromCookie = (res: Response) => {
+  const accessCookie = serializeCookie(ACCESS_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: config.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 0,
@@ -41,7 +37,7 @@ export const clearTokensFromCookie = (
     expires: new Date(0),
   });
 
-  const refreshCookie = serializeCookie(REFRESH_COOKIE_NAME, refreshToken, {
+  const refreshCookie = serializeCookie(REFRESH_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: config.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 0,

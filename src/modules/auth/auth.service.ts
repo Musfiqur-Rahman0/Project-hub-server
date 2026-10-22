@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 
 import { Prisma } from "../../generated/client.js";
 import { prisma } from "../../lib/prisma.js";
-import { AppError, AppErrors } from "../../shared/errors/appErrors.js";
+import { AppErrors } from "../../shared/errors/appErrors.js";
 import config from "../../config/index.js";
 import type {
   AuthTokenPayload,
@@ -12,7 +13,6 @@ import type {
   LoginInput,
   RegisterInput,
 } from "./auth.interface.js";
-import { decode } from "node:punycode";
 
 const authUserSelect = {
   id: true,
@@ -25,9 +25,6 @@ type AuthResult = {
   user: AuthUser;
   tokens: AuthTokens;
 };
-
-const ACCESS_TOKEN_SECONDS = 60 * 60;
-const REFRESH_TOKEN_SECONDS = 60 * 60 * 24 * 7;
 
 export async function register(input: RegisterInput): Promise<AuthUser> {
   const passwordHash = await bcrypt.hash(input.password, 12);
@@ -115,7 +112,12 @@ export function verifyAuthToken(token: string): AuthTokenPayload {
     decoded = jwt.verify(token, getJwtSecret()) as JwtPayload &
       Partial<AuthTokenPayload>;
   } catch (error) {
-    if (error instanceof JsonWebTokenError) {
+    if (
+      error instanceof Error &&
+      ["JsonWebTokenError", "TokenExpiredError", "NotBeforeError"].includes(
+        error.name,
+      )
+    ) {
       throw AppErrors.unauthorized("Seasion ended or invalid token");
     }
     throw error;

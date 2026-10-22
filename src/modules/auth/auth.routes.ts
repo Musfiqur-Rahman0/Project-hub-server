@@ -17,5 +17,6 @@ const loginLimiter = rateLimit({
 
 router.post("/register", asyncHandler(authController.register));
 router.post("/login", loginLimiter, asyncHandler(authController.login));
+router.get("/logout", loginLimiter, asyncHandler(authController.logout));
 
 export default router;
