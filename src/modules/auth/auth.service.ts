@@ -85,6 +85,53 @@ export async function login(input: LoginInput): Promise<AuthResult> {
   return { user: authUser, tokens: createAuthTokens(user.id, secret) };
 }
 
+export async function refresh(
+  token: string,
+): Promise<{ user: AuthUser; tokens: AuthTokens }> {
+  const payload = verifyAuthToken(token);
+  if (payload.tokenType !== "refresh") {
+    throw AppErrors.unauthorized("রিফ্রেশ টোকেনটি সঠিক নয়");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!user) {
+    throw AppErrors.unauthorized("Invalid refresh token");
+  }
+
+  return { user, tokens: createAuthTokens(user.id, getJwtSecret()) };
+}
+
+export async function getUserById(userId: string): Promise<AuthUser> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!user) {
+    throw AppErrors.unauthorized("This user is no longer exits");
+  }
+
+  return user;
+}
+
 function getJwtSecret(): string {
   const secret = config.JWT_SECRET;
   if (!secret) {
