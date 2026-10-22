@@ -68,8 +68,8 @@ export const AppErrors = {
   validation: (message: string, details?: unknown) =>
     createAppError(400, message, "VALIDATION_ERROR", details),
 
-  unauthorized: (message: "Please log in") =>
-    createAppError(400, message, "AUTHENTICATION_ERROR"),
+  unauthorized: (message: string) =>
+    createAppError(401, message, "AUTHENTICATION_ERROR"),
 
   forbidden: (message = "You don't have access to this") =>
     createAppError(400, message, "AUTHORIZATION_ERROR"),
