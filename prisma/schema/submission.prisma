@@ -1,0 +1,24 @@
+model Submission {
+    id            String           @id @default(uuid())
+    projectName   String           @map("project_name")
+    repositoryUrl String           @map("repository_url")
+    liveUrl       String           @map("live_url")
+    description   String           @db.Text
+    status        SubmissionStatus @default(PENDING)
+
+    studentId String @map("student_id")
+    student   User   @relation("StudentSubmissions", fields: [studentId], references: [id], onDelete: Restrict)
+
+    reviewerId String? @map("reviewer_id")
+    reviewer   User?   @relation("SubmissionReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+    reviewedAt DateTime? @map("reviewed_at")
+    createdAt  DateTime  @default(now()) @map("created_at")
+    updatedAt  DateTime  @updatedAt @map("updated_at")
+
+    @@unique([studentId, repositoryUrl])
+    @@index([status, createdAt])
+    @@index([studentId, createdAt])
+    @@index([reviewerId])
+    @@map("submissions")
+}
