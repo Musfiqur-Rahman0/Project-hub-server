@@ -11,4 +11,6 @@ const main = async () => {
   });
 };
 
+// secuirty and middlewares already setup after initalization
+
 main();
