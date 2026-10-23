@@ -2,7 +2,7 @@ import { Prisma, SubmissionStatus } from "../../generated/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppErrors } from "../../shared/errors/appErrors.js";
 import { SessionUser } from "../../types/express.js";
-import type { CreateSubmissionPayload } from "./submission.validation.js";
+import type { CreateSubmissionPayload, UpdateSubmissionStatusPayload } from "./submission.validation.js";
 
 export async function createSubmission(
   payload: CreateSubmissionPayload,
@@ -39,4 +39,31 @@ export async function listSubmission(payload: SessionUser) {
   return prisma.submission.findMany({
     where: { studentId: payload.userId },
   });
+}
+
+export async function updateSubmissionStatus(
+  submissionId: string,
+  reviewerId: string,
+  payload: UpdateSubmissionStatusPayload,
+) {
+  try {
+    return await prisma.submission.update({
+      where: { id: submissionId },
+      data: {
+        status: payload.status,
+        feedback: payload.feedback,
+        reviewerId,
+        reviewedAt: new Date(),
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      throw AppErrors.notFound("Submission");
+    }
+
+    throw error;
+  }
 }

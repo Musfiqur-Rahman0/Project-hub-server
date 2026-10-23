@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SubmissionStatus } from "../../generated/enums.js";
 
 const httpUrlSchema = z
   .string()
@@ -24,4 +25,16 @@ export const createSubmissionSchema = z.object({
     .max(1000, "Keep the description under 1000 characters"),
 });
 
+export const updateSubmissionStatusSchema = z.object({
+  status: z.enum([SubmissionStatus.APPROVED, SubmissionStatus.REJECTED]),
+  feedback: z
+    .string()
+    .trim()
+    .min(1, "Feedback is required")
+    .max(2000, "Feedback must be 2000 characters or fewer"),
+});
+
 export type CreateSubmissionPayload = z.infer<typeof createSubmissionSchema>;
+export type UpdateSubmissionStatusPayload = z.infer<
+  typeof updateSubmissionStatusSchema
+>;

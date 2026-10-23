@@ -11,6 +11,7 @@ model Submission {
 
     reviewerId String? @map("reviewer_id")
     reviewer   User?   @relation("SubmissionReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+    feedback   String?
 
     reviewedAt DateTime? @map("reviewed_at")
     createdAt  DateTime  @default(now()) @map("created_at")
