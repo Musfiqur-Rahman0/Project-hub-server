@@ -2,7 +2,11 @@ import { Prisma, SubmissionStatus } from "../../generated/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppErrors } from "../../shared/errors/appErrors.js";
 import { SessionUser } from "../../types/express.js";
-import type { CreateSubmissionPayload, UpdateSubmissionStatusPayload } from "./submission.validation.js";
+import type {
+  CreateSubmissionPayload,
+  ListSubmissionQuery,
+  UpdateSubmissionStatusPayload,
+} from "./submission.validation.js";
 
 export async function createSubmission(
   payload: CreateSubmissionPayload,
@@ -31,14 +35,37 @@ export async function createSubmission(
   }
 }
 
-export async function listSubmission(payload: SessionUser) {
-  if (payload.role !== "STUDENT") {
-    return prisma.submission.findMany();
-  }
+export async function listSubmission(
+  user: SessionUser,
+  query: ListSubmissionQuery,
+) {
+  const where: Prisma.SubmissionWhereInput = {
+    ...(user.role === "STUDENT" ? { studentId: user.userId } : {}),
+    ...(query.status ? { status: query.status } : {}),
+  };
+  const skip = (query.page - 1) * query.pageSize;
 
-  return prisma.submission.findMany({
-    where: { studentId: payload.userId },
-  });
+  const [submissions, total] = await prisma.$transaction([
+    prisma.submission.findMany({
+      where,
+      skip,
+      take: query.pageSize,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    }),
+    prisma.submission.count({ where }),
+  ]);
+
+  return {
+    submissions,
+    pagination: {
+      page: query.page,
+      pageSize: query.pageSize,
+      total,
+      totalPages: Math.ceil(total / query.pageSize),
+      hasNextPage: skip + submissions.length < total,
+      hasPreviousPage: query.page > 1,
+    },
+  };
 }
 
 export async function updateSubmissionStatus(

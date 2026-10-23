@@ -34,7 +34,20 @@ export const updateSubmissionStatusSchema = z.object({
     .max(2000, "Feedback must be 2000 characters or fewer"),
 });
 
+export const listSubmissionQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).max(1_000_000).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(10),
+  status: z
+    .enum([
+      SubmissionStatus.PENDING,
+      SubmissionStatus.APPROVED,
+      SubmissionStatus.REJECTED,
+    ])
+    .optional(),
+});
+
 export type CreateSubmissionPayload = z.infer<typeof createSubmissionSchema>;
 export type UpdateSubmissionStatusPayload = z.infer<
   typeof updateSubmissionStatusSchema
 >;
+export type ListSubmissionQuery = z.infer<typeof listSubmissionQuerySchema>;
