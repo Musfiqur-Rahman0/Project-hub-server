@@ -1,6 +1,7 @@
 import { Prisma, SubmissionStatus } from "../../generated/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppErrors } from "../../shared/errors/appErrors.js";
+import { SessionUser } from "../../types/express.js";
 import type { CreateSubmissionPayload } from "./submission.validation.js";
 
 export async function createSubmission(
@@ -28,4 +29,14 @@ export async function createSubmission(
 
     throw error;
   }
+}
+
+export async function listSubmission(payload: SessionUser) {
+  if (payload.role !== "STUDENT") {
+    return prisma.submission.findMany();
+  }
+
+  return prisma.submission.findMany({
+    where: { studentId: payload.userId },
+  });
 }

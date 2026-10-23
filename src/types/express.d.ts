@@ -1,5 +1,8 @@
+import type { Role } from "../generated/enums.js";
+
 export interface SessionUser {
   userId: string;
+  role: Role;
 }
 
 declare global {

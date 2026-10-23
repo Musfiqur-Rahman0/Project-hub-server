@@ -5,7 +5,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(authenticate)
+  .get(authenticate, submissionController.listSubmission)
   .post(authenticate, submissionController.createSubmission);
 
 export default router;
