@@ -78,7 +78,7 @@ export const AppErrors = {
     createAppError(404, `${resource} not found`, "NOT_FOUND"),
 
   conflict: (message: string, details?: unknown) =>
-    createAppError(400, message, "CONFLICT", details),
+    createAppError(409, message, "CONFLICT", details),
 
   database: (message = "Failed to store in database", details?: unknown) =>
     createAppError(400, message, "DATABASE_ERROR", details),
@@ -86,7 +86,7 @@ export const AppErrors = {
   tooManyRequest: (
     message = "Too many request. try again later",
     details?: unknown,
-  ) => createAppError(400, message, "RATE_LIMIT_ERROR", details),
+  ) => createAppError(429, message, "RATE_LIMIT_ERROR", details),
 
   internal: (message = "Internal server error") =>
     createAppError(500, message, "INTERNAL_SERVER_ERROR"),
