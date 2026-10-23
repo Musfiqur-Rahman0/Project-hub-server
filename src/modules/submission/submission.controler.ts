@@ -26,6 +26,15 @@ export const listSubmission: RequestHandler = async (req, res) => {
   );
 };
 
+export const getSubmissionStats: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    throw AppErrors.unauthorized("Authentication required");
+  }
+
+  const stats = await submissionService.getSubmissionStats(req.user);
+  return sendSuccess(res, "Submission statistics retrieved successfully", stats);
+};
+
 export const createSubmission: RequestHandler = async (req, res) => {
   if (!req.user) {
     throw AppErrors.unauthorized("Authentication required");

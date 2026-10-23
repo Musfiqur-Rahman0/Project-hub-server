@@ -68,6 +68,43 @@ export async function listSubmission(
   };
 }
 
+export async function getSubmissionStats(user: SessionUser) {
+  const where: Prisma.SubmissionWhereInput =
+    user.role === "STUDENT" ? { studentId: user.userId } : {};
+
+  const groupedCounts = await prisma.submission.groupBy({
+    by: ["status"],
+    where,
+    _count: { _all: true },
+  });
+
+  const counts = {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
+
+  for (const group of groupedCounts) {
+    const count = group._count._all;
+    counts.total += count;
+
+    switch (group.status) {
+      case SubmissionStatus.PENDING:
+        counts.pending = count;
+        break;
+      case SubmissionStatus.APPROVED:
+        counts.approved = count;
+        break;
+      case SubmissionStatus.REJECTED:
+        counts.rejected = count;
+        break;
+    }
+  }
+
+  return counts;
+}
+
 export async function updateSubmissionStatus(
   submissionId: string,
   reviewerId: string,
