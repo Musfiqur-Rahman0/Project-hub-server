@@ -32,16 +32,17 @@ export const authenticate = (
 
 export const allowedRoles = (...roles: UserRole[]): RequestHandler => {
   return async (req, _res, next) => {
+    // console.log("user", req.user?.userId);
     if (!req.user) {
       return next(AppErrors.unauthorized("Authentication required"));
     }
 
     try {
       const user = await getUserById(req.user.userId);
+      console.log("user", user);
       if (!roles.includes(user.role)) {
         return next(AppErrors.forbidden());
       }
-
       return next();
     } catch (error) {
       return next(error);
