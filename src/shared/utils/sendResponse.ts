@@ -4,12 +4,12 @@ import { ApiSuccessResponse } from "./api.interface.js";
 
 export function sendSuccess<T>(
   res: Response,
-  data: T,
   message: string,
+  data: T,
   statusCode = 200,
   meta?: Record<string, unknown>,
 ): Response {
-  const body: ApiSuccessResponse<T> = { success: true, data, message };
+  const body: ApiSuccessResponse<T> = { success: true, message, data };
   if (meta) body.meta = meta;
   return res.status(statusCode).json(body);
 }
