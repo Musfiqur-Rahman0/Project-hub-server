@@ -11,7 +11,7 @@ router.get(
   authenticate,
   allowedRoles(Role.STUDENT, Role.ADMIN),
   (req: Request, res: Response) => {
-    sendSuccess(res, null, "Test completed");
+    sendSuccess(res, "Test completed", null);
   },
 );
 

@@ -22,8 +22,8 @@ export const register: RequestHandler = async (req, res) => {
 
   return sendSuccess(
     res,
-    { user: result },
     "User registration successful",
+    { user: result },
     201,
   );
 };
@@ -35,12 +35,13 @@ export const login: RequestHandler = async (req, res) => {
   setAuthcookies(res, result.tokens);
   return sendSuccess(
     res,
+    "Login successful",
     {
       user: result.user,
       accessToken: result.tokens.accessToken,
       refreshToken: result.tokens.refreshToken,
     },
-    "Login successful",
+
     200,
   );
 };
@@ -55,14 +56,10 @@ export const refresh: RequestHandler = async (req, res) => {
   const result = await authService.refresh(refreshToken);
   setAuthcookies(res, result.tokens);
 
-  return sendSuccess(
-    res,
-    {
-      user: result.user,
-      accessToken: result.tokens.accessToken,
-    },
-    "Successfully refresh access token",
-  );
+  return sendSuccess(res, "Successfully refresh access token", {
+    user: result.user,
+    accessToken: result.tokens.accessToken,
+  });
 };
 
 export const me: RequestHandler = async (req, res) => {
@@ -70,10 +67,10 @@ export const me: RequestHandler = async (req, res) => {
     throw AppErrors.unauthorized("Invalid or expired session");
   }
   const user = await authService.getUserById(req.user.userId);
-  return sendSuccess(res, { user }, "user information retrived successfully");
+  return sendSuccess(res, "user information retrived successfully", { user });
 };
 
 export const logout: RequestHandler = async (_req, res) => {
   clearTokensFromCookie(res);
-  return sendSuccess(res, null, "loged out successfully");
+  return sendSuccess(res, "loged out successfully", null);
 };
