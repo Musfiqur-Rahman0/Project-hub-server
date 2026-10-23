@@ -11,6 +11,6 @@ const main = async () => {
   });
 };
 
-// secuirty and middlewares already setup after initalization
+// Routes and centralized error middleware are configured in app.ts.
 
 main();
