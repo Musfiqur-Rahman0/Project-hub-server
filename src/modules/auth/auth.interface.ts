@@ -1,5 +1,7 @@
 import type { Role } from "../../generated/enums.js";
 
+export type UserRole = Role;
+
 export interface RegisterInput {
   fullName: string;
   email: string;
