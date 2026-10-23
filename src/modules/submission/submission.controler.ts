@@ -2,6 +2,7 @@ import { z } from "zod";
 import { RequestHandler } from "express";
 import {
   createSubmissionSchema,
+  listSubmissionQuerySchema,
   updateSubmissionStatusSchema,
 } from "./submission.validation.js";
 import * as submissionService from "./submission.service.js";
@@ -13,9 +14,16 @@ export const listSubmission: RequestHandler = async (req, res) => {
     throw AppErrors.unauthorized("Authentication required");
   }
 
-  const result = await submissionService.listSubmission(req.user);
+  const query = listSubmissionQuerySchema.parse(req.query);
+  const result = await submissionService.listSubmission(req.user, query);
 
-  return sendSuccess(res, "Successfully retrived all submission list", result);
+  return sendSuccess(
+    res,
+    "Successfully retrieved submission list",
+    result.submissions,
+    200,
+    result.pagination,
+  );
 };
 
 export const createSubmission: RequestHandler = async (req, res) => {
