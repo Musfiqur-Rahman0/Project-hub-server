@@ -72,7 +72,7 @@ export const AppErrors = {
     createAppError(401, message, "AUTHENTICATION_ERROR"),
 
   forbidden: (message = "You don't have access to this") =>
-    createAppError(400, message, "AUTHORIZATION_ERROR"),
+    createAppError(403, message, "AUTHORIZATION_ERROR"),
 
   notFound: (resource = "Information") =>
     createAppError(404, `${resource} not found`, "NOT_FOUND"),

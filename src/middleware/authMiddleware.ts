@@ -1,7 +1,8 @@
-import { NextFunction, Response, Request } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { ACCESS_COOKIE_NAME, parseCookies } from "../lib/cookie.js";
 import { AppErrors } from "../shared/errors/appErrors.js";
-import { verifyAuthToken } from "../modules/auth/auth.service.js";
+import { getUserById, verifyAuthToken } from "../modules/auth/auth.service.js";
+import type { UserRole } from "../modules/auth/auth.interface.js";
 
 export const authenticate = (
   req: Request,
@@ -27,4 +28,24 @@ export const authenticate = (
   } catch (error) {
     return next(error);
   }
+};
+
+export const allowedRoles = (...roles: UserRole[]): RequestHandler => {
+  return async (req, _res, next) => {
+    // console.log("user", req.user?.userId);
+    if (!req.user) {
+      return next(AppErrors.unauthorized("Authentication required"));
+    }
+
+    try {
+      const user = await getUserById(req.user.userId);
+      console.log("user", user);
+      if (!roles.includes(user.role)) {
+        return next(AppErrors.forbidden());
+      }
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  };
 };
