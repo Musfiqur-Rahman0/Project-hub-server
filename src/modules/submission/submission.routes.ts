@@ -9,6 +9,8 @@ router
   .get(authenticate, submissionController.listSubmission)
   .post(authenticate, submissionController.createSubmission);
 
+router.get("/stats", authenticate, submissionController.getSubmissionStats);
+
 router.patch(
   "/:id/review",
   authenticate,
