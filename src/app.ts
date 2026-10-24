@@ -6,10 +6,25 @@ import router from "./routes/index.js";
 import config from "./config/index.js";
 
 const app: Application = express();
+const frontendOrigins = config.FRONTEND_URL?.split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+if (!frontendOrigins?.length) {
+  throw new Error(
+    "FRONTEND_URL must contain at least one allowed frontend origin.",
+  );
+}
+
+const allowedOrigins = new Set(
+  frontendOrigins.map((value) => new URL(value).origin),
+);
 
 app.use(
   cors({
-    origin: config.FRONTEND_URL ,
+    origin: (origin, callback) => {
+      callback(null, !origin || allowedOrigins.has(origin));
+    },
     credentials: true,
   }),
 );
