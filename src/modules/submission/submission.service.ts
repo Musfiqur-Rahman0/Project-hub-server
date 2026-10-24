@@ -42,15 +42,60 @@ export async function listSubmission(
   const where: Prisma.SubmissionWhereInput = {
     ...(user.role === "STUDENT" ? { studentId: user.userId } : {}),
     ...(query.status ? { status: query.status } : {}),
+    ...(query.search
+      ? {
+          OR: [
+            { projectName: { contains: query.search, mode: "insensitive" } },
+            { description: { contains: query.search, mode: "insensitive" } },
+            { repositoryUrl: { contains: query.search, mode: "insensitive" } },
+            ...(user.role === "STUDENT"
+              ? []
+              : [
+                  {
+                    student: {
+                      fullName: {
+                        contains: query.search,
+                        mode: "insensitive" as const,
+                      },
+                    },
+                  },
+                  {
+                    student: {
+                      email: {
+                        contains: query.search,
+                        mode: "insensitive" as const,
+                      },
+                    },
+                  },
+                ]),
+          ],
+        }
+      : {}),
   };
   const skip = (query.page - 1) * query.pageSize;
+  const orderBy: Prisma.SubmissionOrderByWithRelationInput[] =
+    query.sort === "name"
+      ? [{ projectName: "asc" }, { id: "asc" }]
+      : [
+          { createdAt: query.sort === "oldest" ? "asc" : "desc" },
+          { id: query.sort === "oldest" ? "asc" : "desc" },
+        ];
 
   const [submissions, total] = await prisma.$transaction([
     prisma.submission.findMany({
       where,
       skip,
       take: query.pageSize,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      orderBy,
+      ...(user.role === "STUDENT"
+        ? {}
+        : {
+            include: {
+              student: {
+                select: { id: true, fullName: true, email: true },
+              },
+            },
+          }),
     }),
     prisma.submission.count({ where }),
   ]);
