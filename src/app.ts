@@ -9,7 +9,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: config.FRONTEND_URL ?? "http://localhost:3000",
+    origin: config.FRONTEND_URL ,
     credentials: true,
   }),
 );
